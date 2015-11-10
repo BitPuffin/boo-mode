@@ -15,9 +15,8 @@
         (unless (= 0 (current-column))
           (setq should-indent t))
         (backward-char))
-      (if (= (following-char) ?:)
-          (progn
-            (setq should-go-deeper t)))
+      (when (= (following-char) ?:)
+          (setq should-go-deeper t))
       (back-to-indentation)
       (setq previous-indent (current-column)))
     (if should-indent
