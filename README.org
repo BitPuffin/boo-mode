@@ -1,0 +1,24 @@
+* Boo Mode
+A major mode for editing Boo code in emacs written from scratch rather than
+using another language (python) as a base since that ultimately appeared
+to be a maintainence issue.
+
+** Todo 
+These items are what still needs to be done with highest priority first:
+
+*** DONE Basic auto indentation
+Create an auto-indent-function that runs when the user presses their indentation key
+or when the electric indentation is triggered.
+*** TODO Create better auto indentation
+The mode should rebind ~indent-for-tab-command~ to its own to enable some features.
+**** TODO Indentation cycling
+**** TODO Region indent
+*** TODO Syntax Highlighting
+I don't find syntax highlighting very valuable but it should still be implemented.
+**** TODO Comment highlighting
+Pretty much the main thing that's valuable about syntax highlighting :) don't
+wanna read code that was actually commented out with a ~/*~ two thousand lines
+up.
+**** TODO Keyword / Macro highlighting
+Instead of having a list of every keyword, a much simpler heuristic to match is
+to simply highlight the first word of any line that ends with a colon.
