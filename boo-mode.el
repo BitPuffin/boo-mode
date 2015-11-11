@@ -3,6 +3,11 @@
 
 (defvar boo-tab-width tab-width "Boo tab width (default same value as 'tab-width'")
 
+(defun line-is-empty? ()
+  (save-excursion
+    (beginning-of-line)
+    (looking-at "[[:space:]]*$")))
+
 (defun line-ends-with-colon? ()
   (let ((looking-at-colon nil))
     (save-excursion
@@ -45,18 +50,30 @@
   (save-excursion
     (let ((start-col (current-column))
           (keep-looking t))
-      (while keep-looking
-        (forward-line 1)
-        (back-to-indentation)
-        (unless (= 0 (current-column))
-          (setq keep-looking (> (current-column) start-col)))
-        (message (number-to-string (current-column)))))
-    (forward-line -1)
-    (move-end-of-line 1)
+      (if (= 0 start-col)
+          (while keep-looking
+            (forward-line 1)
+            (setq keep-looking (not (eobp)))
+            (when keep-looking
+              (back-to-indentation)
+              (when (= 0 (current-column))
+                (setq keep-looking (not (line-ends-with-colon?))))))
+        (while keep-looking
+          (message "latest code and stuffnn")
+          (forward-line 1)
+          (setq keep-looking (not (eobp)))
+          (when keep-looking
+            (back-to-indentation)
+            (unless (line-is-empty?)
+              (setq keep-looking (> (current-column) start-col)))))))
+    (unless (eobp)
+      (forward-line -1)
+      (move-end-of-line 1))
     (set-mark (point))))
 
 (defun boo-mark-inline-sexp ()
-  "Marks the sexp that the cursor is currently inside")
+  "Marks the sexp that the cursor is currently inside"
+  (message "NYI: boo-mark-inline-sexp"))
 
 (defun boo-mark-sexp ()
   (interactive)
