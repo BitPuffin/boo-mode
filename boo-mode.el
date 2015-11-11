@@ -84,6 +84,7 @@
 (define-derived-mode boo-mode prog-mode "Boo"
   "Major mode for editing Boo source code"
   (setq-local indent-line-function 'boo-indent-function)
-  (setq-local comment-start "#"))
+  (setq-local comment-start "#")
+  (define-key boo-mode-map (kbd "C-M-@") 'boo-mark-sexp))
 
 (provide 'boo-mode)
