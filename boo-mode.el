@@ -44,8 +44,8 @@
   (interactive aoe aoe)
   (boo-indent-function))
 
-(defun boo-mark-trailing-sexp ()
-  "Marks the sexp that the cursor is currently looking at"
+(defun boo-mark-trailing-block ()
+  "Marks the block that the cursor is currently looking at"
   (back-to-indentation)
   (save-excursion
     (let ((start-col (current-column))
@@ -71,20 +71,20 @@
       (move-end-of-line 1))
     (set-mark (point))))
 
-(defun boo-mark-inline-sexp ()
-  "Marks the sexp that the cursor is currently inside"
-  (message "NYI: boo-mark-inline-sexp"))
+(defun boo-mark-inline-block ()
+  "Marks the block that the cursor is currently inside"
+  (message "NYI: boo-mark-inline-block"))
 
-(defun boo-mark-sexp ()
+(defun boo-mark-block ()
   (interactive)
   (if (line-ends-with-colon?)
-      (boo-mark-trailing-sexp)
-    (boo-mark-inline-sexp)))
+      (boo-mark-trailing-block)
+    (boo-mark-inline-block)))
 
 (define-derived-mode boo-mode prog-mode "Boo"
   "Major mode for editing Boo source code"
   (setq-local indent-line-function 'boo-indent-function)
   (setq-local comment-start "#")
-  (define-key boo-mode-map (kbd "C-M-@") 'boo-mark-sexp))
+  (define-key boo-mode-map (kbd "C-c m b") 'boo-mark-block))
 
 (provide 'boo-mode)
