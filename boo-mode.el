@@ -41,7 +41,7 @@
           (indent-to previous-indent)))))
 
 (defun boo-indent ()
-  (interactive aoe aoe)
+  (interactive)
   (boo-indent-function))
 
 (defun boo-mark-trailing-block ()
