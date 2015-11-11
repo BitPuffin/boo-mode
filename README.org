@@ -22,3 +22,7 @@ up.
 **** TODO Keyword / Macro highlighting
 Instead of having a list of every keyword, a much simpler heuristic to match is
 to simply highlight the first word of any line that ends with a colon.
+
+** Keybindings
+
++ ~C-c m b ; boo-mark-block~
