@@ -1,5 +1,5 @@
 * Boo Mode
-A major mode for editing Boo code in emacs written from scratch rather than
+A major mode for editing [[http://boo-lang.org/][Boo]] code in emacs written from scratch rather than
 using another language (python) as a base since that ultimately appeared
 to be a maintainence issue.
 
