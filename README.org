@@ -26,3 +26,4 @@ to simply highlight the first word of any line that ends with a colon.
 ** Keybindings
 
 + ~C-c m b ; boo-mark-block~
++ ~C-c s l c ; boo-toggle-single-line-control-flow~
