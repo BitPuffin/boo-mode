@@ -91,7 +91,38 @@
 
 (defun boo-mark-inline-block ()
   "Marks the block that the cursor is currently inside"
-  (message "NYI: boo-mark-inline-block"))
+  (back-to-indentation)
+  (let ((start-indent (current-column))
+        (keep-looking t)
+        (reached-eob nil))
+    (if (and (not (line-is-empty?)) (= 0 start-indent))
+        (mark-whole-buffer)
+      (save-excursion
+        (while keep-looking
+          (forward-line 1)
+          (if (eobp)
+              (progn
+                (setq keep-looking nil)
+                (setq reached-eob t))
+            (unless (line-is-empty?)
+              (back-to-indentation)
+              (when (< (current-column) start-indent)
+                (setq keep-looking nil)))))
+        (unless reached-eob
+          (forward-line -1)
+          (move-end-of-line 1))
+        (set-mark (point)))
+      (setq keep-looking t)
+      (while keep-looking
+        (forward-line -1)
+        (unless (line-is-empty?)
+          (move-end-of-line 1)
+          (skip-chars-backward " \t")
+          (backward-char)
+          (when (= (following-char) ?:)
+            (back-to-indentation)
+            (when (< (current-column) start-indent)
+              (setq keep-looking nil))))))))
 
 (defun boo-mark-block ()
   (interactive)
