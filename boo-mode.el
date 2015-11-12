@@ -18,6 +18,15 @@
     (beginning-of-line)
     (looking-at "[[:space:]]*$")))
 
+(defun kill-region-bypass-ring (start end)
+  (let ((content (buffer-substring start end)))
+    (delete-region start end)
+    content))
+
+(defun kill-to-eol-bypass-ring ()
+  (let ((region-end (save-excursion (move-end-of-line 1) (point))))
+    (kill-region-bypass-ring (point) region-end)))
+
 (defun line-ends-with-colon? ()
   (let ((looking-at-colon nil))
     (save-excursion
@@ -102,9 +111,8 @@
               (search-backward "unless" (save-excursion (back-to-indentation) (point)) t)
               (search-backward "while" (save-excursion (back-to-indentation) (point)) t))
     (error "No control flow keyword found!"))
-  (kill-line)
-  (back-to-indentation)
-  (let ((conditional (car kill-ring)))
+  (let ((conditional (kill-to-eol-bypass-ring)))
+    (back-to-indentation)
     (save-excursion (newline))
     (insert conditional)
     (move-end-of-line 1)
@@ -117,8 +125,7 @@
 
 (defun boo-multi-line->single-line ()
   (back-to-indentation)
-  (kill-line)
-  (let ((conditional (car kill-ring)))
+  (let ((conditional (kill-to-eol-bypass-ring)))
     (delete-char (- (skip-chars-backward " \t")))
     (delete-backward-char 1)
     (forward-line 1)
