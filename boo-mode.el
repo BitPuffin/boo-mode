@@ -103,7 +103,7 @@
     (forward-line 1)
     (boo-indent)
     (move-end-of-line 1)
-    (newline-and-indent)))
+    (delete-char (skip-chars-backward " "))))
 
 (defun boo-multi-line->single-line () (message "NYI: boo-multi-line->single-line"))
 
