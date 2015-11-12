@@ -43,6 +43,7 @@
     looking-at-colon))
 
 (defun boo-indent-function ()
+  (back-to-indentation)
   (let ((should-indent nil)
         (should-go-deeper nil)
         (previous-indent 0))
