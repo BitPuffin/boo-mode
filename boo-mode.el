@@ -81,10 +81,44 @@
       (boo-mark-trailing-block)
     (boo-mark-inline-block)))
 
+(defun boo-looking-at-control-flow ()
+  (or (looking-at "if")
+      (looking-at "unless")
+      (looking-at "while")))
+
+(defun boo-single-line->multi-line ()
+  (move-end-of-line 1)
+  (delete-char (skip-chars-backward " "))
+  (unless (or (search-backward "if" (save-excursion (back-to-indentation) (point)) t)
+                       (search-backward "unless" (save-excursion (back-to-indentation) (point)) t)
+                       (search-backward "while" (save-excursion (back-to-indentation) (point)) t))
+    (error "No control flow keyword found!"))
+  (kill-line)
+  (back-to-indentation)
+  (let ((conditional (car kill-ring)))
+    (save-excursion (newline))
+    (insert conditional)
+    (move-end-of-line 1)
+    (insert ?:)
+    (forward-line 1)
+    (boo-indent)
+    (move-end-of-line 1)
+    (newline-and-indent)))
+
+(defun boo-multi-line->single-line () (message "NYI: boo-multi-line->single-line"))
+
+(defun boo-toggle-single-line-control-flow ()
+  "Toggles single line and multi line control flow in boo, (trailing if vs if and indent"
+  (interactive)
+  (if (save-excursion (back-to-indentation) (boo-looking-at-control-flow))
+      (boo-multi-line->single-line)
+    (boo-single-line->multi-line)))
+
 (define-derived-mode boo-mode prog-mode "Boo"
   "Major mode for editing Boo source code"
   (setq-local indent-line-function 'boo-indent-function)
   (setq-local comment-start "#")
-  (define-key boo-mode-map (kbd "C-c m b") 'boo-mark-block))
+  (define-key boo-mode-map (kbd "C-c m b") 'boo-mark-block)
+  (define-key boo-mode-map (kbd "C-c s l c") 'boo-toggle-single-line-control-flow))
 
 (provide 'boo-mode)
