@@ -3,6 +3,16 @@
 
 (defvar boo-tab-width tab-width "Boo tab width (default same value as 'tab-width'")
 
+(defun boo-deindent ()
+  (back-to-indentation)
+  (unless (= 0 (current-column))
+    (backward-char)
+    (if (looking-at-p "\t")
+        (delete-char 1)
+      (progn
+        (delete-char 1)
+        (delete-backward-char (1- boo-tab-width))))))
+
 (defun line-is-empty? ()
   (save-excursion
     (beginning-of-line)
@@ -59,7 +69,6 @@
               (when (= 0 (current-column))
                 (setq keep-looking (not (line-ends-with-colon?))))))
         (while keep-looking
-          (message "latest code and stuffnn")
           (forward-line 1)
           (setq keep-looking (not (eobp)))
           (when keep-looking
@@ -82,16 +91,16 @@
     (boo-mark-inline-block)))
 
 (defun boo-looking-at-control-flow ()
-  (or (looking-at "if")
-      (looking-at "unless")
-      (looking-at "while")))
+  (or (looking-at-p "if")
+      (looking-at-p "unless")
+      (looking-at-p "while")))
 
 (defun boo-single-line->multi-line ()
   (move-end-of-line 1)
-  (delete-char (skip-chars-backward " "))
+  (delete-char (- (skip-chars-backward " ")))
   (unless (or (search-backward "if" (save-excursion (back-to-indentation) (point)) t)
-                       (search-backward "unless" (save-excursion (back-to-indentation) (point)) t)
-                       (search-backward "while" (save-excursion (back-to-indentation) (point)) t))
+              (search-backward "unless" (save-excursion (back-to-indentation) (point)) t)
+              (search-backward "while" (save-excursion (back-to-indentation) (point)) t))
     (error "No control flow keyword found!"))
   (kill-line)
   (back-to-indentation)
@@ -103,9 +112,27 @@
     (forward-line 1)
     (boo-indent)
     (move-end-of-line 1)
-    (delete-char (skip-chars-backward " "))))
+    (delete-char (- (skip-chars-backward " ")))
+    (error "lol")))
 
-(defun boo-multi-line->single-line () (message "NYI: boo-multi-line->single-line"))
+(defun boo-multi-line->single-line ()
+  (back-to-indentation)
+  (kill-line)
+  (let ((conditional (car kill-ring)))
+    (delete-char (- (skip-chars-backward " \t")))
+    (delete-backward-char 1)
+    (forward-line 1)
+    (back-to-indentation)
+    (boo-deindent)
+    (move-end-of-line 1)
+    (delete-char (- (skip-chars-backward " ")))
+    (insert ?\s)
+    (insert conditional)
+    (delete-char (- (skip-chars-backward " ")))
+    (backward-char)
+    (when (looking-at-p ":")
+      (message "aoecraohercaoh")
+      (delete-char 1))))
 
 (defun boo-toggle-single-line-control-flow ()
   "Toggles single line and multi line control flow in boo, (trailing if vs if and indent"
