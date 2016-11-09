@@ -47,7 +47,6 @@
 (defun boo-indent-function ()
   (back-to-indentation)
   (when (line-is-empty?)
-    (message "heyooo")
     (let ((should-indent nil)
           (should-go-deeper nil)
           (previous-indent 0))
