@@ -42,27 +42,31 @@
         (setq looking-at-colon (= ?: (following-char)))))
     looking-at-colon))
 
+(defvar boo-de-indent-words (list "return" "pass" "continue" "break"))
+
 (defun boo-indent-function ()
   (back-to-indentation)
-  (let ((should-indent nil)
-        (should-go-deeper nil)
-        (previous-indent 0))
-    (save-excursion
-      (forward-line -1)
-      (move-end-of-line 1)
-      (unless (= 0 (current-column))
-        (skip-indentation-backward)
+  (when (line-is-empty?)
+    (message "heyooo")
+    (let ((should-indent nil)
+          (should-go-deeper nil)
+          (previous-indent 0))
+      (save-excursion
+        (forward-line -1)
+        (move-end-of-line 1)
         (unless (= 0 (current-column))
-          (setq should-indent t))
-        (backward-char))
-      (when (= (following-char) ?:)
+          (skip-indentation-backward)
+          (unless (= 0 (current-column))
+            (setq should-indent t))
+          (backward-char))
+        (when (= (following-char) ?:)
           (setq should-go-deeper t))
-      (back-to-indentation)
-      (setq previous-indent (current-column)))
-    (if should-indent
-        (if should-go-deeper
-            (indent-to (+ previous-indent boo-tab-width))
-          (indent-to previous-indent)))))
+        (back-to-indentation)
+        (setq previous-indent (current-column)))
+      (if should-indent
+          (if should-go-deeper
+              (indent-to (+ previous-indent boo-tab-width))
+            (indent-to previous-indent))))))
 
 (defun boo-indent ()
   (interactive)
