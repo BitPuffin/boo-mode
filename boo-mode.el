@@ -188,6 +188,44 @@
   (setq-local indent-line-function 'boo-indent-function)
   (setq-local comment-start "#")
   (define-key boo-mode-map (kbd "C-c m b") 'boo-mark-block)
-  (define-key boo-mode-map (kbd "C-c s l c") 'boo-toggle-single-line-control-flow))
+  (define-key boo-mode-map (kbd "C-c s l c") 'boo-toggle-single-line-control-flow)
+
+  (mapc (lambda (i) ; set up syntax table with a list of pairs where car is a character and cdr is the syntax descriptor
+          (modify-syntax-entry (car i) (cdr i) boo-mode-syntax-table))
+        '((?/  . ". 124")
+          (?*  . ". 23b")
+          (?#  . "<")
+          (?\n . ">")
+          (?.  . ".")
+          (?+  . ".")
+          (?-  . ".")
+          (?<  . ".")
+          (?>  . ".")
+          (?=  . ".")
+          (?:  . ".")
+          (?\; . ".")
+          (?_  . "_")
+          (?\" . "\"")
+          (?'  . "\"")
+          (?\( . "()")
+          (?\) . ")(")
+          (?\[ . "(]")
+          (?\] . ")[")
+          (?{  . "(}")
+          (?}  . "){")))
+  (setq-local font-lock-defaults '(("def"
+                                    "module"
+                                    "import"
+                                    "class"
+                                    "constructor"
+                                    "struct"
+                                    "if"
+                                    "else"
+                                    "public"
+                                    "private"
+                                    "protected"
+                                    "override") nil nil nil))
+  (message "done!!!!!!!!!1")
+  (message (symbol-name (equal font-lock-defaults nil))))
 
 (provide 'boo-mode)
