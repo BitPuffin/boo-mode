@@ -216,19 +216,47 @@
           (?\] . ")[")
           (?{  . "(}")
           (?}  . "){")))
-  (setq-local font-lock-defaults '(("def"
-                                    "module"
-                                    "import"
-                                    "class"
-                                    "constructor"
-                                    "struct"
-                                    "if"
-                                    "else"
-                                    "public"
-                                    "private"
-                                    "protected"
-                                    "override") nil nil nil))
-  (message "done!!!!!!!!!1")
-  (message (symbol-name (equal font-lock-defaults nil))))
+  (let ((kwds (list (regexp-opt '("def"
+                                  "module"
+                                  "import"
+                                  "class"
+                                  "constructor"
+                                  "destructor"
+                                  "struct"
+                                  "if"
+                                  "elif"
+                                  "else"
+                                  "public"
+                                  "private"
+                                  "protected"
+                                  "override"
+                                  "virtual"
+                                  "return"
+                                  "interface"
+                                  "macro"
+                                  "as"
+                                  "cast"
+                                  "raise"
+                                  "except"
+                                  "try"
+                                  "super"
+                                  "yield"
+                                  "namespace"
+                                  "unless"
+                                  "match"
+                                  "case"
+                                  "otherwise"
+                                  "each" ;temporary
+                                  "in"
+                                  "for"
+                                  "while"
+                                  "var"
+                                  "of"
+                                  "static"
+                                  "null"
+                                  "is"
+                                  "self")
+                                'words))))
+    (setq-local font-lock-defaults (list kwds nil nil nil))))
 
 (provide 'boo-mode)
