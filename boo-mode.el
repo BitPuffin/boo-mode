@@ -256,7 +256,9 @@
                                   "null"
                                   "is"
                                   "self"
-                                  "continue")
+                                  "continue"
+                                  "get"
+                                  "set")
                                 'words))))
     (setq-local font-lock-defaults (list kwds nil nil nil))))
 
