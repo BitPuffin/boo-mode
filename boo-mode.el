@@ -255,7 +255,8 @@
                                   "static"
                                   "null"
                                   "is"
-                                  "self")
+                                  "self"
+                                  "continue")
                                 'words))))
     (setq-local font-lock-defaults (list kwds nil nil nil))))
 
