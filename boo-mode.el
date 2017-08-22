@@ -20,7 +20,7 @@
     (beginning-of-line)
     (looking-at "[[:space:]]*$")))
 
-(defun boo--delete-to-eol ()
+(defun boo--delete-and-extract-to-eol ()
   (let ((region-end (save-excursion (move-end-of-line 1) (point))))
     (delete-and-extract-region (point) region-end)))
 
@@ -149,7 +149,7 @@
               (search-backward "unless" (save-excursion (back-to-indentation) (point)) t)
               (search-backward "while" (save-excursion (back-to-indentation) (point)) t))
     (error "No control flow keyword found!"))
-  (let ((conditional (boo--delete-to-eol)))
+  (let ((conditional (boo--delete-and-extract-to-eol)))
     (back-to-indentation)
     (save-excursion (newline))
     (insert conditional)
@@ -162,7 +162,7 @@
 
 (defun boo--multi-line->single-line ()
   (back-to-indentation)
-  (let ((conditional (boo--delete-to-eol)))
+  (let ((conditional (boo--delete-and-extract-to-eol)))
     (delete-char (- (boo--skip-indentation-backward)))
     (delete-backward-char 1)
     (forward-line 1)
