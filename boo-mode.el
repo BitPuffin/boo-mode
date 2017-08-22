@@ -3,7 +3,7 @@
 
 (defvar boo-tab-width tab-width "Boo tab width (default same value as 'tab-width'")
 
-(defun boo-deindent ()
+(defun boo--de-indent ()
   (back-to-indentation)
   (unless (= 0 (current-column))
     (backward-char)
@@ -13,30 +13,30 @@
         (delete-char 1)
         (delete-backward-char (1- boo-tab-width))))))
 
-(defun line-is-empty? ()
+(defun boo--line-is-empty-p ()
   (save-excursion
     (beginning-of-line)
     (looking-at "[[:space:]]*$")))
 
-(defun kill-region-bypass-ring (start end)
+(defun boo--kill-region-bypass-ring (start end)
   (let ((content (buffer-substring start end)))
     (delete-region start end)
     content))
 
-(defun kill-to-eol-bypass-ring ()
+(defun boo--kill-to-eol-bypass-ring ()
   (let ((region-end (save-excursion (move-end-of-line 1) (point))))
-    (kill-region-bypass-ring (point) region-end)))
+    (boo--kill-region-bypass-ring (point) region-end)))
 
-(defun skip-indentation-backward ()
+(defun boo--skip-indentation-backward ()
   "Skips tabs and spaces backwards"
   (skip-chars-backward " \t"))
 
-(defun line-ends-with-colon? ()
+(defun boo--line-ends-with-colon-p ()
   (let ((looking-at-colon nil))
     (save-excursion
       (move-end-of-line 1)
       (unless (= 0 (current-column))
-        (skip-indentation-backward)
+        (boo--skip-indentation-backward)
         (unless (= 0 (current-column))
           (backward-char))        
         (setq looking-at-colon (= ?: (following-char)))))
@@ -46,7 +46,7 @@
 
 (defun boo-indent-function ()
   (back-to-indentation)
-  (when (line-is-empty?)
+  (when (boo--line-is-empty-p)
     (let ((should-indent nil)
           (should-go-deeper nil)
           (previous-indent 0))
@@ -54,7 +54,7 @@
         (forward-line -1)
         (move-end-of-line 1)
         (unless (= 0 (current-column))
-          (skip-indentation-backward)
+          (boo--skip-indentation-backward)
           (unless (= 0 (current-column))
             (setq should-indent t))
           (backward-char))
@@ -71,7 +71,7 @@
   (interactive)
   (boo-indent-function))
 
-(defun boo-mark-trailing-block ()
+(defun boo--mark-trailing-block ()
   "Marks the block that the cursor is currently looking at"
   (back-to-indentation)
   (save-excursion
@@ -84,26 +84,26 @@
             (when keep-looking
               (back-to-indentation)
               (when (= 0 (current-column))
-                (setq keep-looking (not (line-ends-with-colon?))))))
+                (setq keep-looking (not (boo--line-ends-with-colon-p))))))
         (while keep-looking
           (forward-line 1)
           (setq keep-looking (not (eobp)))
           (when keep-looking
             (back-to-indentation)
-            (unless (line-is-empty?)
+            (unless (boo--line-is-empty-p)
               (setq keep-looking (> (current-column) start-col)))))))
     (unless (eobp)
       (forward-line -1)
       (move-end-of-line 1))
     (set-mark (point))))
 
-(defun boo-mark-inline-block ()
+(defun boo--mark-inline-block ()
   "Marks the block that the cursor is currently inside"
   (back-to-indentation)
   (let ((start-indent (current-column))
         (keep-looking t)
         (reached-eob nil))
-    (if (and (not (line-is-empty?)) (= 0 start-indent))
+    (if (and (not (boo--line-is-empty-p)) (= 0 start-indent))
         (mark-whole-buffer)
       (save-excursion
         (while keep-looking
@@ -112,7 +112,7 @@
               (progn
                 (setq keep-looking nil)
                 (setq reached-eob t))
-            (unless (line-is-empty?)
+            (unless (boo--line-is-empty-p)
               (back-to-indentation)
               (when (< (current-column) start-indent)
                 (setq keep-looking nil)))))
@@ -123,9 +123,9 @@
       (setq keep-looking t)
       (while keep-looking
         (forward-line -1)
-        (unless (line-is-empty?)
+        (unless (boo--line-is-empty-p)
           (move-end-of-line 1)
-          (skip-indentation-backward)
+          (boo--skip-indentation-backward)
           (backward-char)
           (when (= (following-char) ?:)
             (back-to-indentation)
@@ -134,23 +134,23 @@
 
 (defun boo-mark-block ()
   (interactive)
-  (if (line-ends-with-colon?)
-      (boo-mark-trailing-block)
-    (boo-mark-inline-block)))
+  (if (boo--line-ends-with-colon-p)
+      (boo--mark-trailing-block)
+    (boo--mark-inline-block)))
 
-(defun boo-looking-at-control-flow ()
+(defun boo--looking-at-control-flow-p ()
   (or (looking-at-p "if")
       (looking-at-p "unless")
       (looking-at-p "while")))
 
-(defun boo-single-line->multi-line ()
+(defun boo--single-line->multi-line ()
   (move-end-of-line 1)
-  (delete-char (- (skip-indentation-backward)))
+  (delete-char (- (boo--skip-indentation-backward)))
   (unless (or (search-backward "if" (save-excursion (back-to-indentation) (point)) t)
               (search-backward "unless" (save-excursion (back-to-indentation) (point)) t)
               (search-backward "while" (save-excursion (back-to-indentation) (point)) t))
     (error "No control flow keyword found!"))
-  (let ((conditional (kill-to-eol-bypass-ring)))
+  (let ((conditional (boo--kill-to-eol-bypass-ring)))
     (back-to-indentation)
     (save-excursion (newline))
     (insert conditional)
@@ -159,21 +159,21 @@
     (forward-line 1)
     (boo-indent)
     (move-end-of-line 1)
-    (delete-char (- (skip-indentation-backward)))))
+    (delete-char (- (boo--skip-indentation-backward)))))
 
-(defun boo-multi-line->single-line ()
+(defun boo--multi-line->single-line ()
   (back-to-indentation)
-  (let ((conditional (kill-to-eol-bypass-ring)))
-    (delete-char (- (skip-indentation-backward)))
+  (let ((conditional (boo--kill-to-eol-bypass-ring)))
+    (delete-char (- (boo--skip-indentation-backward)))
     (delete-backward-char 1)
     (forward-line 1)
     (back-to-indentation)
-    (boo-deindent)
+    (boo--de-indent)
     (move-end-of-line 1)
-    (delete-char (- (skip-indentation-backward)))
+    (delete-char (- (boo--skip-indentation-backward)))
     (insert ?\s)
     (insert conditional)
-    (delete-char (- (skip-indentation-backward)))
+    (delete-char (- (boo--skip-indentation-backward)))
     (backward-char)
     (when (looking-at-p ":")
       (message "aoecraohercaoh")
@@ -182,9 +182,9 @@
 (defun boo-toggle-single-line-control-flow ()
   "Toggles single line and multi line control flow in boo, (trailing if vs if and indent"
   (interactive)
-  (if (save-excursion (back-to-indentation) (boo-looking-at-control-flow))
-      (boo-multi-line->single-line)
-    (boo-single-line->multi-line)))
+  (if (save-excursion (back-to-indentation) (boo--looking-at-control-flow-p))
+      (boo--multi-line->single-line)
+    (boo--single-line->multi-line)))
 
 (define-derived-mode boo-mode prog-mode "Boo"
   "Major mode for editing Boo source code"
