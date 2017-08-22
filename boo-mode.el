@@ -4,6 +4,7 @@
 (defvar boo-tab-width tab-width "Boo tab width (default same value as 'tab-width')")
 
 (defun boo--de-indent ()
+  "Removes one level of indentation"
   (back-to-indentation)
   (unless (= 0 (current-column))
     (backward-char)
@@ -14,6 +15,7 @@
         (delete-backward-char (1- boo-tab-width))))))
 
 (defun boo--line-is-empty-p ()
+  "Checks if the current line the cursor is on is either empty, or contains nothing but spaces"
   (save-excursion
     (beginning-of-line)
     (looking-at "[[:space:]]*$")))
@@ -68,6 +70,7 @@
             (indent-to previous-indent))))))
 
 (defun boo-indent ()
+  "Indent appropriately"
   (interactive)
   (boo-indent-function))
 
@@ -133,6 +136,7 @@
               (setq keep-looking nil))))))))
 
 (defun boo-mark-block ()
+  "Marks the traling block if cursor is on the line that starts it. Otherwise it marks the enclosing block."
   (interactive)
   (if (boo--line-ends-with-colon-p)
       (boo--mark-trailing-block)
