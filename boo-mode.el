@@ -20,14 +20,9 @@
     (beginning-of-line)
     (looking-at "[[:space:]]*$")))
 
-(defun boo--kill-region-bypass-ring (start end)
-  (let ((content (buffer-substring start end)))
-    (delete-region start end)
-    content))
-
 (defun boo--kill-to-eol-bypass-ring ()
   (let ((region-end (save-excursion (move-end-of-line 1) (point))))
-    (boo--kill-region-bypass-ring (point) region-end)))
+    (delete-and-extract-region (point) region-end)))
 
 (defun boo--skip-indentation-backward ()
   "Skips tabs and spaces backwards"
