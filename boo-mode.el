@@ -1,7 +1,7 @@
 ;;; Boo mode for emacs
 ;;; Author: Isak Andersson
 
-(defvar boo-tab-width tab-width "Boo tab width (default same value as 'tab-width'")
+(defvar boo-tab-width tab-width "Boo tab width (default same value as 'tab-width')")
 
 (defun boo--de-indent ()
   (back-to-indentation)
