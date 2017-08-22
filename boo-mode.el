@@ -1,6 +1,8 @@
 ;;; Boo mode for emacs
 ;;; Author: Isak Andersson
 
+(require 'cl-lib)
+
 (defvar boo-tab-width tab-width "Boo tab width (default same value as 'tab-width')")
 
 (defun boo--de-indent ()
@@ -138,9 +140,7 @@
     (boo--mark-inline-block)))
 
 (defun boo--looking-at-control-flow-p ()
-  (or (looking-at-p "if")
-      (looking-at-p "unless")
-      (looking-at-p "while")))
+  (cl-some #'looking-at-p '("if" "unless" "while")))
 
 (defun boo--single-line->multi-line ()
   (move-end-of-line 1)
