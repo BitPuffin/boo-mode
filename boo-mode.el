@@ -19,11 +19,12 @@
 
 (defun boo--de-indent ()
   "Removes one level of indentation"
-  (back-to-indentation)
-  (let ((m (mod (current-column) tab-width)))
-    (if (zerop m)
-        (indent-line-to (max 0 (- (current-column) tab-width)))
-      (indent-line-to (max 0 (- (current-column) m))))))
+  (let* ((ci (current-indentation))
+         (m (mod ci tab-width))
+         (i (if (zerop m)
+                (max 0 (- ci boo-tab-width))
+              (- ci m))))
+    (indent-line-to i)))
 
 (defun boo--line-is-empty-p ()
   "Checks if the current line the cursor is on is either empty, or contains nothing but spaces"
