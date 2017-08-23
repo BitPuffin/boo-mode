@@ -11,6 +11,12 @@
   "Control flow keywords that can exist as a postfix on a line (e.g. print 'hello' if foo)")
 (defvar boo--control-flow-keywords (append boo--single-lineable-control-flow-keywords (list "for" "match")))
 
+(defcustom boo-indent-trigger-commands
+  '(indent-for-tab-command)
+  "Commands that might trigger a `boo-indent-line' call."
+  :type '(repeat symbol)
+  :group 'boo)
+
 (defun boo--de-indent ()
   "Removes one level of indentation"
   (back-to-indentation)
