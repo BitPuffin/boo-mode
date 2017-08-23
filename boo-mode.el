@@ -5,6 +5,12 @@
 
 (defvar boo-tab-width tab-width "Boo tab width (default same value as 'tab-width')")
 
+(defvar boo--branching-keywords '("if" "unless"))
+(defvar boo--single-lineable-control-flow-keywords
+  (append boo--branching-keywords '("while"))
+  "Control flow keywords that can exist as a postfix on a line (e.g. print 'hello' if foo)")
+(defvar boo--control-flow-keywords (append boo--single-lineable-control-flow-keywords (list "for" "match")))
+
 (defun boo--de-indent ()
   "Removes one level of indentation"
   (back-to-indentation)
@@ -139,15 +145,16 @@
       (boo--mark-trailing-block)
     (boo--mark-inline-block)))
 
-(defun boo--looking-at-control-flow-p ()
-  (cl-some #'looking-at-p '("if" "unless" "while")))
+(defun boo--looking-at-single-lineable-control-flow-p ()
+  (cl-some #'looking-at-p boo--single-lineable-control-flow-keywords))
 
 (defun boo--single-line->multi-line ()
   (move-end-of-line 1)
   (delete-char (- (boo--skip-indentation-backward)))
-  (unless (or (search-backward "if" (save-excursion (back-to-indentation) (point)) t)
-              (search-backward "unless" (save-excursion (back-to-indentation) (point)) t)
-              (search-backward "while" (save-excursion (back-to-indentation) (point)) t))
+  (unless (cl-some
+           (lambda (kw)
+             (search-backward kw (save-excursion (back-to-indentation) (point)) t))
+           boo--single-lineable-control-flow-keywords)
     (error "No control flow keyword found!"))
   (let ((conditional (boo--delete-and-extract-to-eol)))
     (back-to-indentation)
@@ -181,7 +188,7 @@
 (defun boo-toggle-single-line-control-flow ()
   "Toggles single line and multi line control flow in boo, (trailing if vs if and indent"
   (interactive)
-  (if (save-excursion (back-to-indentation) (boo--looking-at-control-flow-p))
+  (if (save-excursion (back-to-indentation) (boo--looking-at-single-lineable-control-flow-p))
       (boo--multi-line->single-line)
     (boo--single-line->multi-line)))
 
