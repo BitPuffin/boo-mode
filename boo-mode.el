@@ -42,6 +42,9 @@
   "Skips tabs and spaces backwards"
   (skip-chars-backward " \t"))
 
+(defun boo--delete-indentation-backward ()
+  (delete-char (- (boo--skip-indentation-backward))))
+
 (defun boo--line-ends-with-colon-p ()
   (let ((looking-at-colon nil))
     (save-excursion
@@ -176,20 +179,19 @@
 
 (defun boo--multi-line->single-line ()
   (back-to-indentation)
-  (let ((conditional (boo--delete-and-extract-to-eol)))
-    (delete-char (- (boo--skip-indentation-backward)))
-    (delete-char -1)
-    (forward-line 1)
+  (let ((conditional (boo--delete-and-extract-to-eol))
+        (indentation (current-column)))
+    (boo--delete-indentation-backward)
+    (delete-char 1)
     (back-to-indentation)
-    (boo--de-indent)
+    (indent-line-to indentation)
     (move-end-of-line 1)
-    (delete-char (- (boo--skip-indentation-backward)))
+    (boo--delete-indentation-backward)
     (insert ?\s)
     (insert conditional)
-    (delete-char (- (boo--skip-indentation-backward)))
+    (boo--delete-indentation-backward)
     (backward-char)
     (when (looking-at-p ":")
-      (message "aoecraohercaoh")
       (delete-char 1))))
 
 (defun boo-toggle-single-line-control-flow ()
