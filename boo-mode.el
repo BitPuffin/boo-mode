@@ -116,7 +116,9 @@
         (keep-looking t)
         (reached-eob nil))
     (if (and (not (boo--line-is-empty-p)) (= 0 start-indent))
-        (mark-whole-buffer)
+        (progn (push-mark (point))
+               (push-mark (point-max) nil t)
+               (goto-char (point-min)))
       (save-excursion
         (while keep-looking
           (forward-line 1)
