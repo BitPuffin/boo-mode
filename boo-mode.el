@@ -1,5 +1,7 @@
-;;; Boo mode for emacs
-;;; Author: Isak Andersson
+;;; boo-mode.el --- Support for the Boo programming language
+
+;; Author: Isak Andersson
+;; Version: 0.0.0
 
 (require 'cl-lib)
 
@@ -274,3 +276,5 @@
     (setq-local font-lock-defaults (list kwds nil nil nil))))
 
 (provide 'boo-mode)
+
+;;; boo-mode.el ends here
