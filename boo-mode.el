@@ -180,7 +180,7 @@
   (back-to-indentation)
   (let ((conditional (boo--delete-and-extract-to-eol)))
     (delete-char (- (boo--skip-indentation-backward)))
-    (delete-backward-char 1)
+    (delete-char -1)
     (forward-line 1)
     (back-to-indentation)
     (boo--de-indent)
